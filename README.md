@@ -1,14 +1,14 @@
-#uberbot
-Python robot that allows to automatize the download of Uber and Uber-eat Receipts (works for french accounts)
+#PANCAKE SWAP BOT 26th of May 2021
 
-The robot will download your receipt and then name them with the date and the price
+This robot allows swapping between BEP20 tokens on Pancake Swap, just like a human beeing would do.
+it is mimicking the behavior of a Lambda user. Its purpose is to allow user to stay AFK (go to sleep) and handle his Swappings at Take profit/Stop Loss pre-registered prices.
+This version is the CONSOLE VERSION (it only supports TP [Take Profit]. This is the NOT the main project.
 
-Prerequisite: chrome
+Pre-requisite : **Google Chrome **Version 90+ (it might work on earlier version but not tested)
 
-Download chrome driver to that path "C:/Program Files (x86)/Google/Chrome/Application/Driver/ChromeDriver.exe"
-Launch pancakeswapbot.py
-Choose a bot, either Uber Bot or uber-eat-bot
-The robot will launch chrome, you then need to connect and then head back to the console
-Let the bot download your receipts
+HOW TO USE:
 
-
+Make sure you have connected METAMASK with your password (Robot does not handle login, and won't)
+Close ALL Pancake swap tabs, windows..
+Launch Bot
+it is not 100%¨accurate, sometimes bot will just freeze forever and you might not swap at the right time, you might not even stop loss correctly. /!\ It is mainly for sleeping purposes. You can get to sleep while letting the PC ON.
