@@ -1,0 +1,21 @@
+{
+	"URL_PANCAKE_SWAP_SWAP_PAGE":"https://exchange.pancakeswap.finance/#/swap",
+	"CHROME_DIR": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+	"timings": {
+		"maxTimeoutBeforeRaisingError": 10,
+		"specialTimeout": 600,
+		"waitingMultiplicator": 1
+	},
+	"driverName": "Chrome",
+
+	"tokens": {
+		"1": "BNB",
+		"2" :"USDC",
+		"3": "USDT",
+		"4": "BUSD",
+		"5":"Custom Token"
+	},
+
+	"nano_address": "nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6"
+
+}
