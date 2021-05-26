@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Cake Bot V0.01\n"
+"POT-Creation-Date: 2021-05-21 19:51+0200\n"
+"PO-Revision-Date: 2021-05-21 19:55+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.3\n"
+"X-Poedit-Basepath: ../../..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Last-Translator: \n"
+"Language: fr\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: __pycache__\n"
+"X-Poedit-SearchPathExcluded-1: .vscode\n"
+"X-Poedit-SearchPathExcluded-2: .git\n"
+
+#: pancake.py:13
+msgid "Hello World"
+msgstr "Salut à tous"
+
+#: pancake.py:15
+msgid "Welcome to PancakeSwapBot, choose language"
+msgstr "Bienvenue dans PancakeSwapBot, choisissez une langue"
+
+#: pancake.py:16
+msgid "Enter (1) for English (default)"
+msgstr "Entrez 1 pour l'anglais"
+
+#: pancake.py:17
+msgid "ENTREZ (2) for French"
+msgstr "Entrez 2 pour le francais"
+
+#: pancake.py:20
+msgid "Votre choix : "
+msgstr "Votre choix :"
