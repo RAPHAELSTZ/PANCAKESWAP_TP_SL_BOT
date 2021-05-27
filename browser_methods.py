@@ -15,6 +15,7 @@ from pywinauto.keyboard import send_keys
 from datetime import datetime
 import ctypes  # An included library with Python install.
 
+import pancake_swap_bot_ui_support
 
 scriptDirectory = pathlib.Path().absolute()
 
@@ -28,16 +29,21 @@ class browser_methods:
         self.config = Params()
         self.URL_PANCAKE_SWAP = self.config.robot["URL_PANCAKE_SWAP_SWAP_PAGE"]
 
-    # Start of the amazing TAKE PROFIT BOT
+    # 
+    ''' 
+    Start of the amazing TAKE PROFIT BOT , if return = TRUE ==> END OF THIS PART
+    '''
     def TAKE_PROFIT_BOT(self, token_from, token_to, percentage):
         # self.findWithPywinAuto('MetaMask Notification')
         # connect:
         
 
+
         chrome_dir = self.config.robot["CHROME_DIR"]
         chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://exchange.pancakeswap.finance/#/swap')
-        chrome_app_swap_tab = Application(backend='uia').connect(path=chrome_dir, title_re='.*PancakeSwap -.*$')
+        chrome_app_swap_tab = Application(backend='uia').connect(path=chrome_dir, title_re='.*PancakeSwap -.*Chrome$')
         
+
         # self.driver = webdriver.Chrome(executable_path=r'C:/Users/Ragnar_lothbroke/Desktop/Bureau/DEV/BOTS/uberbot/ChromeDriver.exe', options=chrome_options ) 
         # self.driver.get(self.URL_PANCAKE_SWAP)
 
@@ -51,7 +57,7 @@ class browser_methods:
         print("You are willing to swap "+str( percentage )+ "% of your "+ token_from +" token(s)")
         self.wait(1)
         # print("Checking  metamask state")
-        pancake_swap_tab = self.findWithPywinAuto('PancakeSwap')
+        pancake_swap_tab = self.findWithPywinAuto('PancakeSwap.*Chrome')
         print("Metamask is running :"+str(self.isMetamaskRunning(pancake_swap_tab)))
 
         close_restore_pages_button = self.findButton(pancake_swap_tab, "CloseButton0")
@@ -90,49 +96,52 @@ class browser_methods:
         self.typeDefinedPercentage(pancake_swap_tab, my_token_balance, swap_percentage_from)
 
         print("Entering the OUTPUT TOKEN")
-        lit_token_TO = self.config.robot["tokens"][str(token_to)]
+        lit_token_TO = token_to
         self.enterOutputToken(pancake_swap_tab, lit_token_TO)
+        
         # pancake_swap_tab.print_control_identifiers()
         self.wait(3)
-        print("Changing price format.")
-        current_price = self.getPriceProcess(pancake_swap_tab)
 
-        print("You now need to set a TAKE PROFIT LIMIT greater than "+str(current_price) +" "+lit_token_TO+" per "+token_from+"    \n" )
-        takeProfitLimit= self.setTakeprofitLimit(pancake_swap_tab, current_price, lit_token_TO, token_from)
-        print("You will swap when price reaches "+str(takeProfitLimit)+" "+lit_token_TO+" per "+token_from)
+        return self.getPriceProcess(pancake_swap_tab)
 
-        # pancake_swap_tab.print_control_identifiers()
-        # pancake_swap_tab.print_control_identifiers()
+
+    def TAKE_PROFIT_PART_II(self, limit, price, token_from, token_to):
+        # Refind pancake swap:
+        pancake_swap_tab = self.findWithPywinAuto('PancakeSwap.*Chrome')
+        print("Before get price process")
+        # current_price = self.getPriceProcess(pancake_swap_tab)
+
+        print("You now need to set a TAKE PROFIT LIMIT greater than "+str(price) +" "+token_to+" per "+token_from+"    \n" )
+        # takeProfitLimit= self.setTakeprofitLimit(pancake_swap_tab, price, token_to, token_from)
+        takeProfitLimit = limit
+        print("You will swap when price reaches "+str(takeProfitLimit)+" "+token_to+" per "+token_from)
 
 
         print("NOW WE WAIT FOR THE PRICE TO CHANGE...")
         self.waitForPriceToReachSupLimit(pancake_swap_tab, takeProfitLimit)
 
-        self.Mbox('Success', 'You have successfully swapped '+str(token_from)+' for '+str(lit_token_TO)+', you should go check pancake swap right away! If you enjoyed that software, please visit our website https://mycryptoshirt.net, we sell t-shirts that will get you crypto tips!')
+        self.Mbox('Success', 'You have successfully swapped '+str(token_from)+' for '+str(token_to)+', you should go check pancake swap right away! If you enjoyed that software, please visit our website https://mycryptoshirt.net, we sell t-shirts that will get you crypto tips!')
         print("You have succesfully swapped")
 
 
 
 
+    def BUY_SHIRTS(self):
+        # self.findWithPywinAuto('MetaMask Notification')
+        # connect:
+        dirpath = os.getcwd()
+
+        chrome_dir = self.config.robot["CHROME_DIR"]
+        self.Mbox('My Crypto Shirts', 'The purpose of mycryptoshirt.net is to allow you to wear tshirts with your eth20/BEP20, BTC, LTC or dogecoin public address in order to potentially earn crypto tips when scanned!')
+
+        chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://mycryptoshirt.net')
 
 
 
-        def BUY_SHIRTS(self):
-            # self.findWithPywinAuto('MetaMask Notification')
-            # connect:
-            dirpath = os.getcwd()
-
-            chrome_dir = self.config.robot["CHROME_DIR"]
-            self.Mbox('My Crypto Shirts', 'The purpose of mycryptoshirt.net is to allow you to wear tshirts with your eth20/BEP20, BTC, LTC or dogecoin public address in order to potentially earn crypto tips when scanned!')
-
-            chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://mycryptoshirt.net')
-
-
-
-        def NANO_TIPS(self):
-            self.Mbox('My Crypto Shirts', 'Credit: Developed by MYCRYPTOSHIRT.NET. If you want to support this bot development : nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6')
-            chrome_dir = self.config.robot["CHROME_DIR"]
-            chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6')
+    def NANO_TIPS(self):
+        self.Mbox('My Crypto Shirts', 'Credit: Developed by MYCRYPTOSHIRT.NET. If you want to support this bot development : nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6')
+        chrome_dir = self.config.robot["CHROME_DIR"]
+        chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6')
 
 
 
@@ -238,7 +247,7 @@ class browser_methods:
 
     def findWithPywinAuto(self, title_regex):
         windows = Desktop(backend="uia").windows()
-        # print([w.window_text() for w in windows])
+        print([w.window_text() for w in windows])
 
         app = Application(backend="uia").connect(title_re='.*'+title_regex+'.*$')
         found_feature = app.window(title_re='.*'+title_regex+'.*$')
@@ -382,6 +391,7 @@ class browser_methods:
         self.wait(1)
         # .click_input(button='right')
         price_element = self.getPrice(app)
+
         return price_element
         # arrow_button = self.findButtonRegex(app, "Button40")
 
@@ -390,7 +400,10 @@ class browser_methods:
 
         price_element = str(price_element_raw).split(". Price ")[1].split(" ")[0]
         price_element = str(price_element).strip()
+        # Set price global variable
 
+        pancake_swap_bot_ui_support.PRICE.set(price_element)
+        
         return float(price_element)
 
 

@@ -6,7 +6,8 @@
 #    May 25, 2021 12:38:49 PM CEST  platform: Windows NT
 
 import sys
-from tkinter import Image, Label, PhotoImage
+from tkinter import Image, Label, PhotoImage, Variable
+
 
 try:
     import Tkinter as tk
@@ -22,6 +23,9 @@ except ImportError:
 
 import pancake_swap_bot_ui_support
 import browser_methods 
+
+CURRENTPRICE_WORDING = 'Current Price:'
+SWAPS_WORDING ='Swaps:'
 
 def vp_start_gui():
     "Starting point when module is the main routine."
@@ -61,9 +65,59 @@ class Toplevel1:
         print(self.checkInput())
         if(self.checkInput()):
             print(current_operation)
-            bm.TAKE_PROFIT_BOT(current_operation["token_from"],current_operation["token_to"],current_operation["percentage"])
+            # Get the first part of the take profit scenario and gets the current price of the token
+    
+            first_part_take_profit = bm.TAKE_PROFIT_BOT(current_operation["token_from"],current_operation["token_to"],current_operation["percentage"])
+            # current_operation["price"] = first_part_take_profit
+            # Changes label with price on UI
+            
+            # self.PRICING.configure(text="PRICE:"+str(current_operation["price"])+ " " + str(current_operation["token_to"]) + " " +str(current_operation["token_from"]))
+
+            pancake_swap_bot_ui_support.PRICE.set(first_part_take_profit)
+            
+            if(first_part_take_profit>0):
+                # Allows user to update limits FIELD
+                self.TAKE_PROFIT_AT.configure(state='normal')
+                # CHANGE ADD MESSAGE + FOCUS FOR SETTING LIMITS !!!
+
+    def updateViewPricing(self, price):
+        self.PRICING.configure(text="PRICE:"+price)+ " " + str(current_operation["token_to"]) + " " +str(current_operation["token_from"]) 
+
+
+    def startLimits(self):
+        # CHANGE !!!! BEFORE PROD
+        # self.TAKE_PROFIT_AT.configure(state='normal')
+
+        TP_ACTIVATED = pancake_swap_bot_ui_support.TAKE_PROFIT_ACTIVATED.get()
+        TP_LIMIT = pancake_swap_bot_ui_support.LIMIT_TP.get()
+        # PRICE = pancake_swap_bot_ui_support.PRICE.get()
+
+        if(self.isLimit(TP_LIMIT)):
+            print("DISPLAYING LIMIT CHOSEN :::"+str(TP_LIMIT))
+            print("Displaying price :::"+str(pancake_swap_bot_ui_support.PRICE))
+            bm.TAKE_PROFIT_PART_II(TP_LIMIT, str(pancake_swap_bot_ui_support.PRICE ), current_operation["token_from"], current_operation["token_to"] )
+                # Invites user to fill in limits
+                # second_part_take_profit = bm.TAKE_PROFIT_PART_II()
+
         # print(pancake_swap_bot_ui_support.TOKEN_FROM_CHOICE.get())
         # showinfo("Choice", pancake_swap_bot_ui_support.TOKEN_FROM_CHOICE.get())
+
+    
+
+    def isLimit(self, limit):
+        if(limit is not None and limit !=''):
+            try:
+                limit = float(limit)
+                if(limit > 0):
+                    return limit
+                else:
+                    return False
+            except ValueError:
+                print("ERROR VALEUR")
+                return False
+   
+
+            print("Limit is defined")
 
     def isGoodFormatErc20(self, address):
         if(str(address).startswith("0x")):
@@ -422,7 +476,7 @@ class Toplevel1:
         self.AVAILABLE_QUANTITY.configure(foreground="#000000")
         self.AVAILABLE_QUANTITY.configure(highlightbackground="#d9d9d9")
         self.AVAILABLE_QUANTITY.configure(highlightcolor="black")
-        self.AVAILABLE_QUANTITY.configure(text="Quantity available : (wait)")
+        self.AVAILABLE_QUANTITY.configure(text=SWAPS_WORDING)
 
         self.TAKE_PROFIT_AT = tk.Entry(top)
         self.TAKE_PROFIT_AT.place(x=339, y=220, height=24, width=225)
@@ -435,11 +489,23 @@ class Toplevel1:
         self.TAKE_PROFIT_AT.configure(selectbackground="blue")
         self.TAKE_PROFIT_AT.configure(selectforeground="white")
         self.TAKE_PROFIT_AT.configure(state='disabled')
+        self.TAKE_PROFIT_AT.configure(textvariable =pancake_swap_bot_ui_support.LIMIT_TP)
         self.tooltip_font = "TkDefaultFont"
         self.TAKE_PROFIT_AT_tooltip = \
         ToolTip(self.TAKE_PROFIT_AT, self.tooltip_font, "Wait for the price to appear, then select a price at which to sell")
 
-        self.STOP_LOSS_AT = tk.Text(top)
+
+
+        # CHECK BOX TO ACTIVATE LIMIT
+        self.CHECK_BOX_TP = tk.Checkbutton(top)
+        self.CHECK_BOX_TP.place(x=569, y=220, height=24, width=15)
+        self.CHECK_BOX_TP.configure(state='normal')
+        self.CHECK_BOX_TP.configure(var= pancake_swap_bot_ui_support.TAKE_PROFIT_ACTIVATED)
+        self.CHECK_BOX_TP.configure(command=self.startLimits)
+        self.CHECK_BOX_TP_tooltip = \
+        ToolTip(self.CHECK_BOX_TP, self.tooltip_font, "Check this box to activate take profit limit")
+
+        self.STOP_LOSS_AT = tk.Entry(top)
         self.STOP_LOSS_AT.place(x=339, y=260, height=24, width=225)
         self.STOP_LOSS_AT.configure(background="white")
         self.STOP_LOSS_AT.configure(font="TkTextFont")
@@ -449,11 +515,22 @@ class Toplevel1:
         self.STOP_LOSS_AT.configure(insertbackground="black")
         self.STOP_LOSS_AT.configure(selectbackground="blue")
         self.STOP_LOSS_AT.configure(selectforeground="white")
-        self.STOP_LOSS_AT.configure(wrap="word")
         self.STOP_LOSS_AT.configure(state='disabled')
         self.tooltip_font = "TkDefaultFont"
         self.STOP_LOSS_AT_tooltip = \
         ToolTip(self.STOP_LOSS_AT, self.tooltip_font, "NOT AVAILABLE YET")
+
+
+        
+        # CHECK BOX TO ACTIVATE STOP LOSS
+        self.CHECK_BOX_SL = tk.Checkbutton(top)
+        self.CHECK_BOX_SL.place(x=569, y=260, height=24, width=15)
+        self.CHECK_BOX_SL.configure(state='normal')
+        # self.CHECK_BOX_SL.configure(command=self.startLimits())
+        
+        self.CHECK_BOX_SL_tooltip = \
+        ToolTip(self.CHECK_BOX_SL, self.tooltip_font, "Check this box to activate STOP LOSS limit")
+
 
         self.TAKE_PROFIT_LABEL = tk.Label(top)
         self.TAKE_PROFIT_LABEL.place(x=238, y=220, height=21, width=94)
@@ -534,17 +611,29 @@ class Toplevel1:
         self.PancakeSwapIMAGE.configure(selectforeground="white")
         
 
-        self.AVAILABLE_QUANTITY_1 = tk.Label(top)
-        self.AVAILABLE_QUANTITY_1.place(x=413, y=190, height=21, width=148)
-        self.AVAILABLE_QUANTITY_1.configure(activebackground="#f9f9f9")
-        self.AVAILABLE_QUANTITY_1.configure(activeforeground="black")
-        self.AVAILABLE_QUANTITY_1.configure(background="#d9d9d9")
-        self.AVAILABLE_QUANTITY_1.configure(disabledforeground="#a3a3a3")
-        self.AVAILABLE_QUANTITY_1.configure(foreground="#000000")
-        self.AVAILABLE_QUANTITY_1.configure(highlightbackground="#d9d9d9")
-        self.AVAILABLE_QUANTITY_1.configure(highlightcolor="black")
-        self.AVAILABLE_QUANTITY_1.configure(justify='left')
-        self.AVAILABLE_QUANTITY_1.configure(text="CURRENT PRICE :")
+        self.PRICING = tk.Label(top)
+        self.PRICING.place(x=413, y=190, height=21, width=220)
+        self.PRICING.configure(activebackground="#f9f9f9")
+        self.PRICING.configure(activeforeground="black")
+        self.PRICING.configure(background="#d9d9d9")
+        self.PRICING.configure(disabledforeground="#a3a3a3")
+        self.PRICING.configure(foreground="#000000")
+        self.PRICING.configure(highlightbackground="#d9d9d9")
+        self.PRICING.configure(highlightcolor="black")
+        self.PRICING.configure(justify='left')
+        self.PRICING.configure(textvariable=pancake_swap_bot_ui_support.PRICE)
+
+        # self.UNITY = tk.Label(top)
+        # self.UNITY.place(x=435, y=190, height=21, width=220)
+        # self.UNITY.configure(activebackground="#f9f9f9")
+        # self.UNITY.configure(activeforeground="black")
+        # self.UNITY.configure(background="#d9d9d9")
+        # self.UNITY.configure(disabledforeground="#a3a3a3")
+        # self.UNITY.configure(foreground="#000000")
+        # self.UNITY.configure(highlightbackground="#d9d9d9")
+        # self.UNITY.configure(highlightcolor="black")
+        # self.UNITY.configure(justify='left')
+        # self.UNITY.configure(text=unity)
 
 # ======================================================
 # Support code for Balloon Help (also called tooltips).

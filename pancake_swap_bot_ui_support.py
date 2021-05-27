@@ -35,6 +35,23 @@ def set_Tk_var():
     global PERCENTAGE
     PERCENTAGE = tk.StringVar()
 
+    global TAKE_PROFIT_ACTIVATED
+    TAKE_PROFIT_ACTIVATED = tk.BooleanVar()
+
+    global STOP_LOSS_ACTIVATED
+    STOP_LOSS_ACTIVATED = tk.BooleanVar()
+
+    global LIMIT_TP
+    LIMIT_TP = tk.StringVar()
+
+    global STOP_LOSS
+    STOP_LOSS = tk.StringVar()
+
+    global PRICE
+    PRICE = tk.StringVar()
+
+    # global PRICE_WORDING
+    # PRICE_WORDING = PRICE+" ZEBS"
 
 def init(top, gui, *args, **kwargs):
     global w, top_level, root
