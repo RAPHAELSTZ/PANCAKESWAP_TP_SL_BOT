@@ -100,6 +100,7 @@ class browser_methods:
         self.enterOutputToken(pancake_swap_tab, lit_token_TO)
         
         pancake_swap_bot_ui_support.UNITY.set(token_to +" per "+token_from)
+
         # pancake_swap_tab.print_control_identifiers()
         self.wait(3)
 
@@ -378,6 +379,8 @@ class browser_methods:
 
         if(text_edit_input is not None):
             text_edit_input.set_text(float(send_amount))
+            # Register amount to global variable so that it can be shown on UI
+            pancake_swap_bot_ui_support.QUANTITY.set(send_amount)
 
 
     def getPriceProcess(self, app):
@@ -402,7 +405,7 @@ class browser_methods:
         price_element = str(price_element).strip()
         # Set price global variable
         print("SETTING A NEW PRICE IN BM : ")
-        pancake_swap_bot_ui_support.UNITY.set("")
+        # pancake_swap_bot_ui_support.UNITY.set("")
         pancake_swap_bot_ui_support.PRICE.set(float(price_element))
         print("READING NEW PRICE ::"+str(pancake_swap_bot_ui_support.PRICE.get()))
         return float(pancake_swap_bot_ui_support.PRICE.get())

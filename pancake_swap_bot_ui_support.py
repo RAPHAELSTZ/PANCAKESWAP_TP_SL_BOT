@@ -52,6 +52,9 @@ def set_Tk_var():
 
     global UNITY
     UNITY = tk.StringVar()
+
+    global QUANTITY
+    QUANTITY = tk.StringVar()
     
 
     # global PRICE_WORDING

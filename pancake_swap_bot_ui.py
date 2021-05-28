@@ -467,17 +467,17 @@ class Toplevel1:
         self.CUSTOM_TOKEN_TEXT_TO.bind("<Button-1>", lambda e: activateRadio(self.CUSTOMTOKEN_BUTTON_3))
 
 
+        self.QUANTITY_LABEL = tk.Label(top)
+        self.QUANTITY_LABEL.place(relx=0.349, rely=0.326, height=21, width=37)
+        self.QUANTITY_LABEL.configure(activebackground="#f9f9f9")
+        self.QUANTITY_LABEL.configure(activeforeground="black")
+        self.QUANTITY_LABEL.configure(background="#d9d9d9")
+        self.QUANTITY_LABEL.configure(disabledforeground="#a3a3a3")
+        self.QUANTITY_LABEL.configure(foreground="#000000")
+        self.QUANTITY_LABEL.configure(highlightbackground="#d9d9d9")
+        self.QUANTITY_LABEL.configure(highlightcolor="black")
+        self.QUANTITY_LABEL.configure(text=SWAPS_WORDING)
 
-        self.AVAILABLE_QUANTITY = tk.Label(top)
-        self.AVAILABLE_QUANTITY.place(x=220, y=190, height=21, width=147)
-        self.AVAILABLE_QUANTITY.configure(activebackground="#f9f9f9")
-        self.AVAILABLE_QUANTITY.configure(activeforeground="black")
-        self.AVAILABLE_QUANTITY.configure(background="#d9d9d9")
-        self.AVAILABLE_QUANTITY.configure(disabledforeground="#a3a3a3")
-        self.AVAILABLE_QUANTITY.configure(foreground="#000000")
-        self.AVAILABLE_QUANTITY.configure(highlightbackground="#d9d9d9")
-        self.AVAILABLE_QUANTITY.configure(highlightcolor="black")
-        self.AVAILABLE_QUANTITY.configure(text=SWAPS_WORDING)
 
         self.TAKE_PROFIT_AT = tk.Entry(top)
         self.TAKE_PROFIT_AT.place(x=339, y=220, height=24, width=225)
@@ -612,29 +612,70 @@ class Toplevel1:
         self.PancakeSwapIMAGE.configure(selectforeground="white")
         
 
+        # self.PRICING = tk.Label(top)
+        # self.PRICING.place(x=450, y=190, height=21, width=100)
+        # self.PRICING.configure(activebackground="#f9f9f9")
+        # self.PRICING.configure(activeforeground="black")
+        # self.PRICING.configure(background="#d9d9d9")
+        # self.PRICING.configure(disabledforeground="#a3a3a3")
+        # self.PRICING.configure(foreground="#000000")
+        # self.PRICING.configure(highlightbackground="#d9d9d9")
+        # self.PRICING.configure(highlightcolor="black")
+        
+ 
+        
         self.PRICING = tk.Label(top)
-        self.PRICING.place(x=413, y=190, height=21, width=220)
-        self.PRICING.configure(activebackground="#f9f9f9")
-        self.PRICING.configure(activeforeground="black")
+        self.PRICING.place(relx=0.756, rely=0.326, height=21, width=49)
         self.PRICING.configure(background="#d9d9d9")
         self.PRICING.configure(disabledforeground="#a3a3a3")
         self.PRICING.configure(foreground="#000000")
-        self.PRICING.configure(highlightbackground="#d9d9d9")
-        self.PRICING.configure(highlightcolor="black")
         self.PRICING.configure(justify='left')
         self.PRICING.configure(textvariable=pancake_swap_bot_ui_support.PRICE)
 
+        
+        # self.UNITY = tk.Label(top)
+        # self.UNITY.place(x=470, y=190, height=21, width=220)
+        # self.UNITY.configure(activebackground="#f9f9f9")
+        # self.UNITY.configure(activeforeground="black")
+        # self.UNITY.configure(background="#d9d9d9")
+        # self.UNITY.configure(disabledforeground="#a3a3a3")
+        # self.UNITY.configure(foreground="#000000")
+        # self.UNITY.configure(highlightbackground="#d9d9d9")
+        # self.UNITY.configure(highlightcolor="black")
+        # self.UNITY.configure(justify='left')
+        # self.UNITY.configure(text="unity")
+
+
+
+
+        self.CURRENT_PRICE_LABEL = tk.Label(top)
+        self.CURRENT_PRICE_LABEL.place(relx=0.64, rely=0.326, height=21
+                , width=78)
+        self.CURRENT_PRICE_LABEL.configure(activebackground="#f9f9f9")
+        self.CURRENT_PRICE_LABEL.configure(activeforeground="black")
+        self.CURRENT_PRICE_LABEL.configure(background="#d9d9d9")
+        self.CURRENT_PRICE_LABEL.configure(disabledforeground="#a3a3a3")
+        self.CURRENT_PRICE_LABEL.configure(foreground="#000000")
+        self.CURRENT_PRICE_LABEL.configure(highlightbackground="#d9d9d9")
+        self.CURRENT_PRICE_LABEL.configure(highlightcolor="black")
+        self.CURRENT_PRICE_LABEL.configure(justify='left')
+        self.CURRENT_PRICE_LABEL.configure(text='''Current Price:''')
+
+        self.QUANTITY_AT_STAKE = tk.Label(top)
+        self.QUANTITY_AT_STAKE.place(relx=0.407, rely=0.326, height=21, width=94)
+        self.QUANTITY_AT_STAKE.configure(background="#d9d9d9")
+        self.QUANTITY_AT_STAKE.configure(disabledforeground="#a3a3a3")
+        self.QUANTITY_AT_STAKE.configure(foreground="#000000")
+        self.QUANTITY_AT_STAKE.configure(textvariable=pancake_swap_bot_ui_support.QUANTITY)
+
+
         self.UNITY = tk.Label(top)
-        self.UNITY.place(x=550, y=190, height=21, width=220)
-        self.UNITY.configure(activebackground="#f9f9f9")
-        self.UNITY.configure(activeforeground="black")
+        self.UNITY.place(relx=0.828, rely=0.326, height=21, width=104)
         self.UNITY.configure(background="#d9d9d9")
+        self.UNITY.configure(cursor="fleur")
         self.UNITY.configure(disabledforeground="#a3a3a3")
         self.UNITY.configure(foreground="#000000")
-        self.UNITY.configure(highlightbackground="#d9d9d9")
-        self.UNITY.configure(highlightcolor="black")
-        self.UNITY.configure(justify='left')
-        self.UNITY.configure(text="unity")
+        self.UNITY.configure(textvariable=pancake_swap_bot_ui_support.UNITY)
 
 # ======================================================
 # Support code for Balloon Help (also called tooltips).
