@@ -1,12 +1,9 @@
 from logging import warn
 from Params import Params
-
 import time
 from datetime import date, datetime
-
 import os
 from pathlib import Path
-
 import pathlib
 from pprint import pprint
 from pywinauto.application import Application
@@ -34,20 +31,11 @@ class browser_methods:
     Start of the amazing TAKE PROFIT BOT , if return = TRUE ==> END OF THIS PART
     '''
     def TAKE_PROFIT_BOT(self, token_from, token_to, percentage):
-        # self.findWithPywinAuto('MetaMask Notification')
-        # connect:
-        
-
 
         chrome_dir = self.config.robot["CHROME_DIR"]
         chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://exchange.pancakeswap.finance/#/swap')
         chrome_app_swap_tab = Application(backend='uia').connect(path=chrome_dir, title_re='.*PancakeSwap -.*Chrome$')
         
-
-        # self.driver = webdriver.Chrome(executable_path=r'C:/Users/Ragnar_lothbroke/Desktop/Bureau/DEV/BOTS/uberbot/ChromeDriver.exe', options=chrome_options ) 
-        # self.driver.get(self.URL_PANCAKE_SWAP)
-
-
         # PAUSE IMPORTANTE SINON BUG
         time.sleep(1)
 
@@ -82,7 +70,6 @@ class browser_methods:
 
         # print("Click and entering swap FROM TOKEN")
         
-
         try:
             self.wait(3)
             self.enterInputToken(pancake_swap_tab, token_from)
@@ -93,7 +80,7 @@ class browser_methods:
         my_token_balance = self.getTokenBalance(pancake_swap_tab, token_from)
 
         print("Typing the desired amount")
-        self.typeDefinedPercentage(pancake_swap_tab, my_token_balance, swap_percentage_from)
+        self.typeDefinedPercentage(pancake_swap_tab, my_token_balance, swap_percentage_from, token_from)
 
         print("Entering the OUTPUT TOKEN")
         lit_token_TO = token_to
@@ -101,7 +88,6 @@ class browser_methods:
         
         pancake_swap_bot_ui_support.UNITY.set(token_to +" per "+token_from)
 
-        # pancake_swap_tab.print_control_identifiers()
         self.wait(3)
 
         return self.getPriceProcess(pancake_swap_tab)
@@ -372,7 +358,7 @@ class browser_methods:
             return float(balance)
 
 
-    def typeDefinedPercentage(self, app, token_amount, percentage):
+    def typeDefinedPercentage(self, app, token_amount, percentage, token_from):
         print("...Typing defined percentage of token to swap ...")
         send_amount = (float(token_amount) * float(percentage)) /100
         text_edit_input = self.findTextEdit(app, "FromEdit")
@@ -380,7 +366,7 @@ class browser_methods:
         if(text_edit_input is not None):
             text_edit_input.set_text(float(send_amount))
             # Register amount to global variable so that it can be shown on UI
-            pancake_swap_bot_ui_support.QUANTITY.set(send_amount)
+            pancake_swap_bot_ui_support.QUANTITY.set(str(send_amount)+ " "+str(token_from))
 
 
     def getPriceProcess(self, app):

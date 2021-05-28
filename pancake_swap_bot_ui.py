@@ -65,18 +65,26 @@ class Toplevel1:
     def startRobot(self):
         print(self.checkInput())
         if(self.checkInput()):
+            # First thing to do is grey out quantity, token from and token to (If user changes his mind he can force quit the bot)
+            # self.Labelframe1.configure(state="disabled")
+            for child in self.Labelframe1.winfo_children():
+                child.configure(state='disable')
+
+            for child in self.Labelframe1_4.winfo_children():
+                child.configure(state='disable')
+                
+
             print(current_operation)
             # Get the first part of the take profit scenario and gets the current price of the token
     
             first_part_take_profit = bm.TAKE_PROFIT_BOT(current_operation["token_from"],current_operation["token_to"],current_operation["percentage"])
-            # current_operation["price"] = first_part_take_profit
-            # Changes label with price on UI
-            
-            # self.PRICING.configure(text="PRICE:"+str(current_operation["price"])+ " " + str(current_operation["token_to"]) + " " +str(current_operation["token_from"]))
 
             pancake_swap_bot_ui_support.PRICE.set(first_part_take_profit)
             
             if(first_part_take_profit>0):
+                # Invite user to enter a limit and/or a stop loss
+                bm.Mbox("Enter Limit / Stop Loss", "It's time to enter either a limit, a stop loss or both !")
+                root.after(1, lambda: root.focus_force())
                 # Allows user to update limits FIELD
                 self.TAKE_PROFIT_AT.configure(state='normal')
                 # CHANGE ADD MESSAGE + FOCUS FOR SETTING LIMITS !!!
