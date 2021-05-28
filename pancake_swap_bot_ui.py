@@ -6,7 +6,7 @@
 #    May 25, 2021 12:38:49 PM CEST  platform: Windows NT
 
 import sys
-from tkinter import Image, Label, PhotoImage, Variable
+from tkinter import Image, Label, PhotoImage, Variable, messagebox
 import os
 import subprocess
 import threading
@@ -93,7 +93,11 @@ class Toplevel1:
                 # Allows user to update limits FIELD and STOP LOSS FIELD
                 self.TAKE_PROFIT_AT.configure(state='normal')
                 self.STOP_LOSS_AT.configure(state='normal')
+                self.START_SECOND_PART.configure(state='normal')
                 # CHANGE ADD MESSAGE + FOCUS FOR SETTING LIMITS !!!
+                # Deactivate Start Robot button
+                self.START_BOT_BUTTON.configure(state='disabled')
+                
 
     def updateViewPricing(self, price):
         self.PRICING.configure(text="PRICE:"+price)+ " " + str(current_operation["token_to"]) + " " +str(current_operation["token_from"]) 
@@ -103,13 +107,16 @@ class Toplevel1:
         # CHANGE !!!! BEFORE PROD
         # self.TAKE_PROFIT_AT.configure(state='normal')
 
+        if(not self.buttonStartSecondPart()):
+            return
+        
         PRICE = pancake_swap_bot_ui_support.PRICE.get()
         TP_ACTIVATED = pancake_swap_bot_ui_support.TAKE_PROFIT_ACTIVATED.get()
         SL_ACTIVATED = pancake_swap_bot_ui_support.STOP_LOSS_ACTIVATED.get()
         TP_LIMIT = pancake_swap_bot_ui_support.LIMIT_TP.get()
         SL_LIMIT = pancake_swap_bot_ui_support.STOP_LOSS.get()
 
-
+ 
         if(self.isLimit(TP_LIMIT, PRICE) and TP_ACTIVATED and not SL_ACTIVATED):
             print("DISPLAYING LIMIT CHOSEN :::"+str(TP_LIMIT))
             print("Displaying price :::"+str(pancake_swap_bot_ui_support.PRICE))
@@ -125,7 +132,12 @@ class Toplevel1:
             print("Stop loss limit :::"+str(SL_LIMIT))
             print("Displaying price :::"+str(pancake_swap_bot_ui_support.PRICE))
             bm.TAKE_PROFIT_PART_II(TP_LIMIT, SL_LIMIT, pancake_swap_bot_ui_support.PRICE , current_operation["token_from"], current_operation["token_to"], root, "STOP_LOSS_AND_TP" )
-        
+
+
+    def buttonStartSecondPart(self):
+        return messagebox.askyesno("Launch Robot ?","Launch robot or add/remove limit ?")
+
+     
 
     def isLimit(self, limit, PRICE):
         if(limit is not None and limit !=''):
@@ -188,8 +200,9 @@ class Toplevel1:
         # If entree was custom we take user value as entree
         if(from_choice.strip() == 'CUSTOM'):
             # Values of associated ENTRY fields
-            texte_val = self.CUSTOM_TOKEN_FROM.get()
-
+            # texte_val = self.CUSTOM_TOKEN_FROM.get()
+            texte_val = pancake_swap_bot_ui_support.TOKEN_CUSTOM_FROM_CHOICE.get()
+            print("TEXT VAL IS ::"+texte_val)
             if(texte_val.strip() == ''):
                 showerror("Information missing", "You need to choose both sides of the swap ! ")
                 return False
@@ -200,7 +213,7 @@ class Toplevel1:
             from_choice = texte_val
 
         if(to_choice.strip() == 'CUSTOM'):
-            texte_val = self.CUSTOM_TOKEN_TEXT_TO.get()
+            texte_val = pancake_swap_bot_ui_support.TOKEN_CUSTOM_TO_CHOICE.get()
             if(texte_val.strip() == ''):
                 showerror("Information missing", "You need to choose both sides of the swap ! ")
                 return False
@@ -221,8 +234,8 @@ class Toplevel1:
         print("CUSTOM TOKEN TO :"+pancake_swap_bot_ui_support.TOKEN_TO_CHOICE.get()+"\nCUSTOM TOKEN FROM :"+pancake_swap_bot_ui_support.TOKEN_FROM_CHOICE.get())
         global current_operation
         current_operation = { 
-                "token_to" : pancake_swap_bot_ui_support.TOKEN_TO_CHOICE.get(),
-                "token_from" : pancake_swap_bot_ui_support.TOKEN_FROM_CHOICE.get(),
+                "token_to" : to_choice,
+                "token_from" : from_choice,
                 "percentage" : pancake_swap_bot_ui_support.PERCENTAGE.get()
             }
         return True
@@ -369,6 +382,8 @@ class Toplevel1:
         self.CUSTOM_TOKEN_FROM.configure(selectbackground="blue")
         self.CUSTOM_TOKEN_FROM.configure(selectforeground="white")
         self.CUSTOM_TOKEN_FROM.bind("<Button-1>", lambda e: activateRadio(self.CUSTOMTOKEN_BUTTON))
+        self.CUSTOM_TOKEN_FROM.configure(textvariable=pancake_swap_bot_ui_support.TOKEN_CUSTOM_FROM_CHOICE)
+        
 
 
 
@@ -505,6 +520,7 @@ class Toplevel1:
         self.CUSTOM_TOKEN_TEXT_TO.configure(selectbackground="blue")
         self.CUSTOM_TOKEN_TEXT_TO.configure(selectforeground="white")
         self.CUSTOM_TOKEN_TEXT_TO.bind("<Button-1>", lambda e: activateRadio(self.CUSTOMTOKEN_BUTTON_3))
+        self.CUSTOM_TOKEN_TEXT_TO.configure(textvariable=pancake_swap_bot_ui_support.TOKEN_CUSTOM_TO_CHOICE)
 
 
         self.QUANTITY_LABEL = tk.Label(top)
@@ -542,7 +558,6 @@ class Toplevel1:
         self.CHECK_BOX_TP.place(x=569, y=220, height=24, width=15)
         self.CHECK_BOX_TP.configure(state='disabled')
         self.CHECK_BOX_TP.configure(var= pancake_swap_bot_ui_support.TAKE_PROFIT_ACTIVATED)
-        self.CHECK_BOX_TP.configure(command=self.startLimits)
         self.CHECK_BOX_TP_tooltip = \
         ToolTip(self.CHECK_BOX_TP, self.tooltip_font, "Check this box to activate take profit limit")
 
@@ -569,7 +584,7 @@ class Toplevel1:
         self.CHECK_BOX_SL.place(x=569, y=260, height=24, width=15)
         self.CHECK_BOX_SL.configure(state='disabled')
         self.CHECK_BOX_SL.configure(var= pancake_swap_bot_ui_support.STOP_LOSS_ACTIVATED)
-        self.CHECK_BOX_SL.configure(command=self.startLimits)
+
         
         self.CHECK_BOX_SL_tooltip = \
         ToolTip(self.CHECK_BOX_SL, self.tooltip_font, "Check this box to activate STOP LOSS limit")
@@ -653,18 +668,6 @@ class Toplevel1:
         self.PancakeSwapIMAGE.configure(selectbackground="blue")
         self.PancakeSwapIMAGE.configure(selectforeground="white")
         
-
-        # self.PRICING = tk.Label(top)
-        # self.PRICING.place(x=450, y=190, height=21, width=100)
-        # self.PRICING.configure(activebackground="#f9f9f9")
-        # self.PRICING.configure(activeforeground="black")
-        # self.PRICING.configure(background="#d9d9d9")
-        # self.PRICING.configure(disabledforeground="#a3a3a3")
-        # self.PRICING.configure(foreground="#000000")
-        # self.PRICING.configure(highlightbackground="#d9d9d9")
-        # self.PRICING.configure(highlightcolor="black")
-        
- 
         
         self.PRICING = tk.Label(top)
         self.PRICING.place(relx=0.756, rely=0.326, height=21, width=49)
@@ -673,22 +676,6 @@ class Toplevel1:
         self.PRICING.configure(foreground="#000000")
         self.PRICING.configure(justify='left')
         self.PRICING.configure(textvariable=pancake_swap_bot_ui_support.PRICE)
-
-        
-        # self.UNITY = tk.Label(top)
-        # self.UNITY.place(x=470, y=190, height=21, width=220)
-        # self.UNITY.configure(activebackground="#f9f9f9")
-        # self.UNITY.configure(activeforeground="black")
-        # self.UNITY.configure(background="#d9d9d9")
-        # self.UNITY.configure(disabledforeground="#a3a3a3")
-        # self.UNITY.configure(foreground="#000000")
-        # self.UNITY.configure(highlightbackground="#d9d9d9")
-        # self.UNITY.configure(highlightcolor="black")
-        # self.UNITY.configure(justify='left')
-        # self.UNITY.configure(text="unity")
-
-
-
 
         self.CURRENT_PRICE_LABEL = tk.Label(top)
         self.CURRENT_PRICE_LABEL.place(relx=0.64, rely=0.326, height=21
@@ -710,7 +697,6 @@ class Toplevel1:
         self.QUANTITY_AT_STAKE.configure(foreground="#000000")
         self.QUANTITY_AT_STAKE.configure(textvariable=pancake_swap_bot_ui_support.QUANTITY)
 
-
         self.UNITY = tk.Label(top)
         self.UNITY.place(relx=0.828, rely=0.326, height=21, width=104)
         self.UNITY.configure(background="#d9d9d9")
@@ -720,7 +706,20 @@ class Toplevel1:
         self.UNITY.configure(textvariable=pancake_swap_bot_ui_support.UNITY)
 
 
-
+        self.START_SECOND_PART = tk.Button(top)
+        self.START_SECOND_PART.place(x=585, y=245, height=24, width=50)
+        self.START_SECOND_PART.configure(activebackground="#ececec")
+        self.START_SECOND_PART.configure(activeforeground="#000000")
+        self.START_SECOND_PART.configure(background="#d9d9d9")
+        self.START_SECOND_PART.configure(disabledforeground="#a3a3a3")
+        self.START_SECOND_PART.configure(foreground="#000000")
+        self.START_SECOND_PART.configure(highlightbackground="#d9d9d9")
+        self.START_SECOND_PART.configure(highlightcolor="black")
+        self.START_SECOND_PART.configure(pady="0")
+        self.START_SECOND_PART.configure(text="go")
+        self.START_SECOND_PART.configure(command=self.startRobot)
+        self.START_SECOND_PART.configure(command=self.startLimits)
+        self.START_SECOND_PART.configure(state='disabled')
 
 
 

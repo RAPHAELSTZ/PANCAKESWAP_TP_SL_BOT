@@ -346,6 +346,7 @@ class browser_methods:
             list_button.click()
             self.wait(1.8)
             send_keys(TOKEN_TO)
+            self.wait(0.2)
             send_keys("{ENTER}")
             # app.print_control_identifiers()
             
@@ -494,7 +495,7 @@ class browser_methods:
     def waitWithPriceSLorTP(self, app, stoploss, takeprofit, root):
         current_pricing = self.getPrice(app)    
         pricing_on = True
-        print("We'll try to save your token with a stop loss !")
+        print("You both activated Stop loss and Take profit limit! We'll try our best..!")
 
         def currentPricing():
             current_pricing = self.getPrice(app)  

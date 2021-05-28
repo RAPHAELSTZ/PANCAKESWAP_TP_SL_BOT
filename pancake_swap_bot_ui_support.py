@@ -24,13 +24,13 @@ def set_Tk_var():
     TOKEN_FROM_CHOICE = tk.StringVar()
 
     global TOKEN_CUSTOM_FROM_CHOICE
-    TOKEN_CUSTOM_FROM_CHOICE = 'CUSTOM'
+    TOKEN_CUSTOM_FROM_CHOICE = tk.StringVar()
 
     global TOKEN_TO_CHOICE
     TOKEN_TO_CHOICE = tk.StringVar()
 
     global TOKEN_CUSTOM_TO_CHOICE
-    TOKEN_CUSTOM_TO_CHOICE = 'CUSTOM'
+    TOKEN_CUSTOM_TO_CHOICE = tk.StringVar()
 
     global PERCENTAGE
     PERCENTAGE = tk.StringVar()
