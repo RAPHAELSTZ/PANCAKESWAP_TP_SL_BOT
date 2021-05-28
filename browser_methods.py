@@ -96,6 +96,11 @@ class browser_methods:
     def TAKE_PROFIT_PART_II(self, limit, price, token_from, token_to, root):
         # Refind pancake swap:
         pancake_swap_tab = self.findWithPywinAuto('PancakeSwap.*Chrome')
+        # pancake_swap_tab.restore().set_focus()
+        pancake_swap_tab.minimize().maximize()
+        # pancake_swap_tab.Minimize()
+        # pancake_swap_tab.Restore()
+        
         print("Before get price process")
         # current_price = self.getPriceProcess(pancake_swap_tab)
 
