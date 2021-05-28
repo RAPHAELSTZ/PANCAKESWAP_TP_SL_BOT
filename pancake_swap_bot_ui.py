@@ -7,7 +7,9 @@
 
 import sys
 from tkinter import Image, Label, PhotoImage, Variable
-
+import os
+import subprocess
+import threading
 
 try:
     import Tkinter as tk
@@ -84,9 +86,13 @@ class Toplevel1:
             if(first_part_take_profit>0):
                 # Invite user to enter a limit and/or a stop loss
                 bm.Mbox("Enter Limit / Stop Loss", "It's time to enter either a limit, a stop loss or both !")
+                # Activates the two check boxes that will turn limits/sl on and off
+                self.CHECK_BOX_SL.configure(state='normal')
+                self.CHECK_BOX_TP.configure(state='normal')
                 root.after(1, lambda: root.focus_force())
-                # Allows user to update limits FIELD
+                # Allows user to update limits FIELD and STOP LOSS FIELD
                 self.TAKE_PROFIT_AT.configure(state='normal')
+                self.STOP_LOSS_AT.configure(state='normal')
                 # CHANGE ADD MESSAGE + FOCUS FOR SETTING LIMITS !!!
 
     def updateViewPricing(self, price):
@@ -97,33 +103,59 @@ class Toplevel1:
         # CHANGE !!!! BEFORE PROD
         # self.TAKE_PROFIT_AT.configure(state='normal')
 
+        PRICE = pancake_swap_bot_ui_support.PRICE.get()
         TP_ACTIVATED = pancake_swap_bot_ui_support.TAKE_PROFIT_ACTIVATED.get()
+        SL_ACTIVATED = pancake_swap_bot_ui_support.STOP_LOSS_ACTIVATED.get()
         TP_LIMIT = pancake_swap_bot_ui_support.LIMIT_TP.get()
-        # PRICE = pancake_swap_bot_ui_support.PRICE.get()
+        SL_LIMIT = pancake_swap_bot_ui_support.STOP_LOSS.get()
 
-        if(self.isLimit(TP_LIMIT)):
+
+        if(self.isLimit(TP_LIMIT, PRICE) and TP_ACTIVATED and not SL_ACTIVATED):
             print("DISPLAYING LIMIT CHOSEN :::"+str(TP_LIMIT))
             print("Displaying price :::"+str(pancake_swap_bot_ui_support.PRICE))
-            bm.TAKE_PROFIT_PART_II(TP_LIMIT, pancake_swap_bot_ui_support.PRICE , current_operation["token_from"], current_operation["token_to"], root )
-                # Invites user to fill in limits
-                # second_part_take_profit = bm.TAKE_PROFIT_PART_II()
+            bm.TAKE_PROFIT_PART_II(TP_LIMIT, SL_LIMIT, pancake_swap_bot_ui_support.PRICE , current_operation["token_from"], current_operation["token_to"], root, "TAKE_PROFIT" )
 
-        # print(pancake_swap_bot_ui_support.TOKEN_FROM_CHOICE.get())
-        # showinfo("Choice", pancake_swap_bot_ui_support.TOKEN_FROM_CHOICE.get())
+        elif(self.isStopLoss(SL_LIMIT, PRICE) and SL_ACTIVATED and not TP_ACTIVATED):
+            print("DISPLAYING LIMIT CHOSEN :::"+str(SL_LIMIT))
+            print("Displaying price :::"+str(pancake_swap_bot_ui_support.PRICE))
+            bm.TAKE_PROFIT_PART_II(TP_LIMIT, SL_LIMIT, pancake_swap_bot_ui_support.PRICE , current_operation["token_from"], current_operation["token_to"], root, "STOP_LOSS" )
+        
+        elif(self.isStopLoss(SL_LIMIT, PRICE) and self.isLimit(TP_LIMIT, PRICE) and SL_ACTIVATED and TP_ACTIVATED):
+            print("Take profit limit :::"+str(TP_LIMIT))
+            print("Stop loss limit :::"+str(SL_LIMIT))
+            print("Displaying price :::"+str(pancake_swap_bot_ui_support.PRICE))
+            bm.TAKE_PROFIT_PART_II(TP_LIMIT, SL_LIMIT, pancake_swap_bot_ui_support.PRICE , current_operation["token_from"], current_operation["token_to"], root, "STOP_LOSS_AND_TP" )
+        
 
-    
-
-    def isLimit(self, limit):
+    def isLimit(self, limit, PRICE):
         if(limit is not None and limit !=''):
             try:
                 limit = float(limit)
-                if(limit > 0):
+                if(limit > 0 and float(limit)>float(PRICE)):
                     return limit
                 else:
                     return False
             except ValueError:
-                print("ERROR VALEUR")
+                bm.Mbox('Wrong stop loss!', 'You need to enter a limit price above 0 and above the current price.')
+                print("VALUE ERROR FOR LIMIT PRICE")
                 return False
+
+    def isStopLoss(self, STOPLOSS, PRICE):
+        if(STOPLOSS is not None and STOPLOSS !=''):
+            try:
+                print("IN HERE ?")
+                STOPLOSS = float(STOPLOSS)
+                if(STOPLOSS > 0 and float(STOPLOSS)<float(PRICE)):
+                    return STOPLOSS
+                else:
+                    return False
+            except ValueError:
+                print("VALUE ERROR FOR STOP LOSS PRICE")
+                bm.Mbox('Wrong stop loss!', 'You need to enter a stop loss price above 0 and bellow the current price.')
+
+                return False
+        else:
+            print("NOT HERE !")
    
 
             print("Limit is defined")
@@ -508,7 +540,7 @@ class Toplevel1:
         # CHECK BOX TO ACTIVATE LIMIT
         self.CHECK_BOX_TP = tk.Checkbutton(top)
         self.CHECK_BOX_TP.place(x=569, y=220, height=24, width=15)
-        self.CHECK_BOX_TP.configure(state='normal')
+        self.CHECK_BOX_TP.configure(state='disabled')
         self.CHECK_BOX_TP.configure(var= pancake_swap_bot_ui_support.TAKE_PROFIT_ACTIVATED)
         self.CHECK_BOX_TP.configure(command=self.startLimits)
         self.CHECK_BOX_TP_tooltip = \
@@ -525,6 +557,7 @@ class Toplevel1:
         self.STOP_LOSS_AT.configure(selectbackground="blue")
         self.STOP_LOSS_AT.configure(selectforeground="white")
         self.STOP_LOSS_AT.configure(state='disabled')
+        self.STOP_LOSS_AT.configure(textvariable =pancake_swap_bot_ui_support.STOP_LOSS)
         self.tooltip_font = "TkDefaultFont"
         self.STOP_LOSS_AT_tooltip = \
         ToolTip(self.STOP_LOSS_AT, self.tooltip_font, "NOT AVAILABLE YET")
@@ -534,8 +567,9 @@ class Toplevel1:
         # CHECK BOX TO ACTIVATE STOP LOSS
         self.CHECK_BOX_SL = tk.Checkbutton(top)
         self.CHECK_BOX_SL.place(x=569, y=260, height=24, width=15)
-        self.CHECK_BOX_SL.configure(state='normal')
-        # self.CHECK_BOX_SL.configure(command=self.startLimits())
+        self.CHECK_BOX_SL.configure(state='disabled')
+        self.CHECK_BOX_SL.configure(var= pancake_swap_bot_ui_support.STOP_LOSS_ACTIVATED)
+        self.CHECK_BOX_SL.configure(command=self.startLimits)
         
         self.CHECK_BOX_SL_tooltip = \
         ToolTip(self.CHECK_BOX_SL, self.tooltip_font, "Check this box to activate STOP LOSS limit")
@@ -684,6 +718,218 @@ class Toplevel1:
         self.UNITY.configure(disabledforeground="#a3a3a3")
         self.UNITY.configure(foreground="#000000")
         self.UNITY.configure(textvariable=pancake_swap_bot_ui_support.UNITY)
+
+
+
+
+
+
+
+
+
+    # def compile_terminal_command(terminal_command, last_line_index) :
+    #     # The last line index stores the line where the command thread has to output in the listbox
+    #     # since the listbox may have also received more commands in that span and the thread may take 
+    #     # some time to give output
+        
+    #     command_summary = terminal_command.split(' ') # Split the command and args.
+    #     os.environ["PYTHONUNBUFFERED"] = "1" # MAKE SURE THE PREVIOUS OUTPUT IS NOT RECIEVED
+        
+    #     # > We use the subprocess module's run method to run the command and redirect output and errors
+    #     # to the pipe from where we can extract it later.
+    #     # > I will suggest running this with shell = True since that was the way it was working for me and was
+    #     # not working with shell = False for some reason.
+    #     # > Also the current working directory argument can be passed but did not work in my case where i set
+    #     # the current working directory to the system drive C: in my case and put a python file there
+    #     # when I ran the file it did not run and picked up my local directory and not the C:
+    #     result = subprocess.run(command_summary, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell = True, env = os.environ)
+        
+    #     output = result.stdout
+    #     # To make sure we print output line by line and not in one single line we use splitlines.
+    #     output_lines = output.splitlines()
+    #     for k in output_lines :
+    #         terminal_listbox.insert(last_line_index, k)
+    #         last_line_index += 1 # Increases line index to make sure output is printed line by line.
+        
+    #     return
+
+    # def refresh_terminal(backspace = False) :
+    #     # refreshes the terminal when a change is done to terminal by the user.
+    #     global terminal_text
+        
+    #     if terminal_text != '>> ' or backspace :
+    #         terminal_listbox.delete(tk.END)
+    #     terminal_listbox.insert(tk.END, terminal_text)
+    #     return
+
+    # def append_to_terminal_text(text) :
+    #     # can append a single character or more to the terminal
+    #     global terminal_text
+        
+    #     terminal_listbox.delete(tk.END)
+    #     terminal_text = terminal_text + text
+    #     terminal_listbox.insert(tk.END, terminal_text)
+    #     terminal_listbox.yview_moveto(1)
+    #     return
+
+    # def terminal_enter_key_callback() :
+    #     global terminal_text
+        
+    #     # The thread that compiles the output is run in background to make sure it does not hang the 
+    #     # program or does not stop the terminal incase the output is taking time to be generated.
+    #     compiler_thread = threading.Thread(target = compile_terminal_command, args = (terminal_text[3 : ], terminal_listbox.size()))
+    #     compiler_thread.daemon = True
+    #     compiler_thread.start()
+        
+    #     terminal_text = '>> ' # Resetting the terminal_text variable that stores the text of the current line of the terminal.
+        
+    #     terminal_listbox.insert(tk.END, terminal_text) # Insert the terminal text(basically a new line in this case) to the terminal listbox.
+    #     terminal_listbox.yview_moveto(1) # scrolls down the listbox down to the very last.
+    #     return
+
+    # def type_to_terminal(string) :
+    #     # types a given string automatically to the terminal.
+    #     for k in string :
+    #         append_to_terminal_text(k)
+        
+    #     terminal_listbox.yview_moveto(1)
+    #     return
+
+    # def terminal_backspace_callback() :
+    #     # callback for backspace key erases the last character.
+    #     global terminal_text
+        
+    #     if len(terminal_text) > 3 :
+    #         terminal_text = terminal_text[ : -1]
+    #     refresh_terminal(backspace = True)
+    #     return
+
+
+    # terminal = tk.Frame(root, bg = 'black')
+
+    # # Initializing a listbox to act as terminal with bg and fg of your own choice.
+    # # NOTE:  in the listbox to make it so the selection of listbox items is not visible
+    # # I have changed the highlight color and select color to background color and also have set
+    # # the active style i.e. the style used to display a selection to tk.NONE, and have also set
+    # # the highlight thickness to 0.
+    # terminal_listbox = tk.Listbox(terminal, bg = 'black', fg = 'white', highlightcolor = 'black', highlightthickness = 0, selectbackground = 'black', activestyle = tk.NONE)
+    # terminal_scrollbar = tk.Scrollbar(terminal)
+    # terminal_scrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+
+    # # packing and stuff.
+    # terminal_listbox.pack(expand = True, fill = tk.BOTH)
+    # terminal.pack(expand = True, fill = tk.BOTH)
+
+    # # Inserting the copyright thingy.
+    # terminal_listbox.insert(tk.END, 'Tkinter Terminal')
+    # terminal_listbox.insert(tk.END, '© Copyright blah blah')
+    # terminal_listbox.insert(tk.END, 'By Matrix Programmer!')
+
+    # # Intializes the terminal text for the first line.
+    # terminal_text = '>> '
+
+    # # Assigns a scrollbar to the terminal.
+    # terminal_listbox.config(yscrollcommand = terminal_scrollbar.set)
+    # terminal_scrollbar.config(command = terminal_listbox.yview)
+
+    # # THE FIRST EVER INSERTED ITEM DOES NOT APPEAR SO THIS IS A BUFFER ITEM TO FILL THAT SPOT
+    # terminal_listbox.insert(tk.END, '')
+    # terminal_listbox.insert(tk.END, '')
+
+    # append_to_terminal_text('') # Buffer.
+
+    # # SETTING UP BINDINGS FOR ENTER AND BACKSPACE CALLBACKS WITH THEIR RESPECTIVE KEYS
+    # terminal_listbox.bind('<Return>', lambda x : terminal_enter_key_callback())
+    # terminal_listbox.bind('<BackSpace>', lambda x : terminal_backspace_callback())
+
+    # # SETTING UP KEYBOARD INPUT FOR A LISTBOX HARDCODINGLY.
+    # terminal_listbox.bind('a', lambda x : append_to_terminal_text('a'))
+    # terminal_listbox.bind('b', lambda x : append_to_terminal_text('b'))
+    # terminal_listbox.bind('c', lambda x : append_to_terminal_text('c'))
+    # terminal_listbox.bind('d', lambda x : append_to_terminal_text('d'))
+    # terminal_listbox.bind('e', lambda x : append_to_terminal_text('e'))
+    # terminal_listbox.bind('f', lambda x : append_to_terminal_text('f'))
+    # terminal_listbox.bind('g', lambda x : append_to_terminal_text('g'))
+    # terminal_listbox.bind('h', lambda x : append_to_terminal_text('h'))
+    # terminal_listbox.bind('i', lambda x : append_to_terminal_text('i'))
+    # terminal_listbox.bind('j', lambda x : append_to_terminal_text('j'))
+    # terminal_listbox.bind('k', lambda x : append_to_terminal_text('k'))
+    # terminal_listbox.bind('l', lambda x : append_to_terminal_text('l'))
+    # terminal_listbox.bind('m', lambda x : append_to_terminal_text('m'))
+    # terminal_listbox.bind('n', lambda x : append_to_terminal_text('n'))
+    # terminal_listbox.bind('o', lambda x : append_to_terminal_text('o'))
+    # terminal_listbox.bind('p', lambda x : append_to_terminal_text('p'))
+    # terminal_listbox.bind('q', lambda x : append_to_terminal_text('q'))
+    # terminal_listbox.bind('r', lambda x : append_to_terminal_text('r'))
+    # terminal_listbox.bind('s', lambda x : append_to_terminal_text('s'))
+    # terminal_listbox.bind('t', lambda x : append_to_terminal_text('t'))
+    # terminal_listbox.bind('u', lambda x : append_to_terminal_text('u'))
+    # terminal_listbox.bind('v', lambda x : append_to_terminal_text('v'))
+    # terminal_listbox.bind('w', lambda x : append_to_terminal_text('w'))
+    # terminal_listbox.bind('x', lambda x : append_to_terminal_text('x'))
+    # terminal_listbox.bind('y', lambda x : append_to_terminal_text('y'))
+    # terminal_listbox.bind('z', lambda x : append_to_terminal_text('z'))
+    # terminal_listbox.bind('A', lambda x : append_to_terminal_text('A'))
+    # terminal_listbox.bind('B', lambda x : append_to_terminal_text('B'))
+    # terminal_listbox.bind('C', lambda x : append_to_terminal_text('C'))
+    # terminal_listbox.bind('D', lambda x : append_to_terminal_text('D'))
+    # terminal_listbox.bind('E', lambda x : append_to_terminal_text('E'))
+    # terminal_listbox.bind('F', lambda x : append_to_terminal_text('F'))
+    # terminal_listbox.bind('G', lambda x : append_to_terminal_text('G'))
+    # terminal_listbox.bind('H', lambda x : append_to_terminal_text('H'))
+    # terminal_listbox.bind('I', lambda x : append_to_terminal_text('I'))
+    # terminal_listbox.bind('J', lambda x : append_to_terminal_text('J'))
+    # terminal_listbox.bind('K', lambda x : append_to_terminal_text('K'))
+    # terminal_listbox.bind('L', lambda x : append_to_terminal_text('L'))
+    # terminal_listbox.bind('M', lambda x : append_to_terminal_text('M'))
+    # terminal_listbox.bind('N', lambda x : append_to_terminal_text('N'))
+    # terminal_listbox.bind('O', lambda x : append_to_terminal_text('O'))
+    # terminal_listbox.bind('P', lambda x : append_to_terminal_text('P'))
+    # terminal_listbox.bind('Q', lambda x : append_to_terminal_text('Q'))
+    # terminal_listbox.bind('R', lambda x : append_to_terminal_text('R'))
+    # terminal_listbox.bind('S', lambda x : append_to_terminal_text('S'))
+    # terminal_listbox.bind('T', lambda x : append_to_terminal_text('T'))
+    # terminal_listbox.bind('U', lambda x : append_to_terminal_text('U'))
+    # terminal_listbox.bind('V', lambda x : append_to_terminal_text('V'))
+    # terminal_listbox.bind('W', lambda x : append_to_terminal_text('W'))
+    # terminal_listbox.bind('X', lambda x : append_to_terminal_text('X'))
+    # terminal_listbox.bind('Y', lambda x : append_to_terminal_text('Y'))
+    # terminal_listbox.bind('Z', lambda x : append_to_terminal_text('Z'))
+    # terminal_listbox.bind('1', lambda x : append_to_terminal_text('1'))
+    # terminal_listbox.bind('2', lambda x : append_to_terminal_text('2'))
+    # terminal_listbox.bind('3', lambda x : append_to_terminal_text('3'))
+    # terminal_listbox.bind('4', lambda x : append_to_terminal_text('4'))
+    # terminal_listbox.bind('5', lambda x : append_to_terminal_text('5'))
+    # terminal_listbox.bind('6', lambda x : append_to_terminal_text('6'))
+    # terminal_listbox.bind('7', lambda x : append_to_terminal_text('7'))
+    # terminal_listbox.bind('8', lambda x : append_to_terminal_text('8'))
+    # terminal_listbox.bind('9', lambda x : append_to_terminal_text('9'))
+    # terminal_listbox.bind('0', lambda x : append_to_terminal_text('0'))
+    # terminal_listbox.bind('.', lambda x : append_to_terminal_text('.'))
+    # terminal_listbox.bind(':', lambda x : append_to_terminal_text(':'))
+    # terminal_listbox.bind('!', lambda x : append_to_terminal_text('!'))
+    # terminal_listbox.bind('-', lambda x : append_to_terminal_text('-'))
+    # terminal_listbox.bind('_', lambda x : append_to_terminal_text('_'))
+    # terminal_listbox.bind('?', lambda x : append_to_terminal_text('?'))
+    # terminal_listbox.bind('=', lambda x : append_to_terminal_text('='))
+    # terminal_listbox.bind('<slash>', lambda x : append_to_terminal_text('/'))
+    # terminal_listbox.bind('<backslash>', lambda x : append_to_terminal_text('\\'))
+    # terminal_listbox.bind('<space>', lambda x : append_to_terminal_text(' '))
+    # # Not all keys have been binded here as its a demonstration but as per need all can be binded.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ======================================================
 # Support code for Balloon Help (also called tooltips).

@@ -92,26 +92,31 @@ class browser_methods:
 
         return self.getPriceProcess(pancake_swap_tab)
 
-
-    def TAKE_PROFIT_PART_II(self, limit, price, token_from, token_to, root):
+    '''
+        This methods defines what happens once use has described either a SL, a TP or both
+        minimize().maximize() is a trick to get the focus back on the browser
+    '''
+    def TAKE_PROFIT_PART_II(self, limit, stoploss,  price, token_from, token_to, root, TYPE_OF_PART_II):
         # Refind pancake swap:
         pancake_swap_tab = self.findWithPywinAuto('PancakeSwap.*Chrome')
         # pancake_swap_tab.restore().set_focus()
         pancake_swap_tab.minimize().maximize()
-        # pancake_swap_tab.Minimize()
-        # pancake_swap_tab.Restore()
-        
+
         print("Before get price process")
-        # current_price = self.getPriceProcess(pancake_swap_tab)
-
         print("You now need to set a TAKE PROFIT LIMIT greater than "+str(price) +" "+token_to+" per "+token_from+"    \n" )
-        # takeProfitLimit= self.setTakeprofitLimit(pancake_swap_tab, price, token_to, token_from)
+
+
         takeProfitLimit = limit
+        stoplossLimit= stoploss
         print("You will swap when price reaches "+str(takeProfitLimit)+" "+token_to+" per "+token_from)
-
-
         print("NOW WE WAIT FOR THE PRICE TO CHANGE...")
-        self.waitForPriceToReachSupLimit(pancake_swap_tab, takeProfitLimit, root)
+
+        if(TYPE_OF_PART_II == 'TAKE_PROFIT'):
+            self.waitForPriceToReachSupLimit(pancake_swap_tab, takeProfitLimit, root)
+        elif(TYPE_OF_PART_II == 'STOP_LOSS'):
+            self.waitForPriceToReachStopLoss(pancake_swap_tab, stoplossLimit, root)
+        elif(TYPE_OF_PART_II == 'STOP_LOSS_AND_TP'):
+            self.waitWithPriceSLorTP(pancake_swap_tab, stoplossLimit, takeProfitLimit, root)
 
 
 
@@ -444,6 +449,77 @@ class browser_methods:
                 self.swapTokens(app)
                 self.congrats()
 
+        currentPricing()
+
+    def congrats(self):
+        self.Mbox('Success', 'You have successfully swapped '+str(token_from)+' for '+str(token_to)+', you should go check pancake swap right away! If you enjoyed that software, please visit our website https://mycryptoshirt.net, we sell t-shirts that will get you crypto tips!')
+        print("You have succesfully swapped")
+
+
+
+    '''
+        This methods shows a TKINTER 'loop' to allow the robot to know whether price is under stop loss or not
+    '''
+    def waitForPriceToReachStopLoss(self, app, stoploss, root):
+        current_pricing = self.getPrice(app)    
+        pricing_on = True
+        print("We'll try to save your token with a stop loss !")
+
+        def currentPricing():
+            current_pricing = self.getPrice(app)  
+            if(current_pricing  > float(stoploss)):
+             
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> stoploss : "+str(stoploss), end ="\r")
+                
+                root.after(1000, currentPricing)
+            else:
+                print("NOT HAPPENNING")
+
+        
+            if(current_pricing <= float(stoploss)):
+                print("Price reached ! STOP LOSS ACTIVATED ! Swap process started")
+                print("Accepting a very likely 'PRICE UPDATED' ACCEPT BUTTON")
+                self.acceptPriceChange(app)
+                self.swapTokens(app)
+                self.congrats()
+        # Launches above method !
+        currentPricing()
+
+    
+    '''
+        This methods shows a TKINTER 'loop' to allow the robot to know whether price is under stop loss or not
+    '''
+    def waitWithPriceSLorTP(self, app, stoploss, takeprofit, root):
+        current_pricing = self.getPrice(app)    
+        pricing_on = True
+        print("We'll try to save your token with a stop loss !")
+
+        def currentPricing():
+            current_pricing = self.getPrice(app)  
+            if(current_pricing  > float(stoploss) and current_pricing <= float(takeprofit)):
+             
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> stoploss : "+str(stoploss), end ="\r")
+                
+                root.after(1000, currentPricing)
+            else:
+                print("NOT HAPPENNING")
+
+        
+            if(current_pricing < float(stoploss) or current_pricing >= float(takeprofit)):
+                if(current_pricing < float(stoploss)):
+                    print("Stop loss activated !")
+                elif(current_pricing > float(takeprofit)):
+                    print("Take profit activated !!")
+                print("Accepting a very likely 'PRICE UPDATED' ACCEPT BUTTON")
+                self.acceptPriceChange(app)
+                self.swapTokens(app)
+                self.congrats()
+
+        # Launches above method !
         currentPricing()
 
     def congrats(self):
