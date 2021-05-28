@@ -50,6 +50,10 @@ def set_Tk_var():
     global PRICE
     PRICE = tk.StringVar()
 
+    global UNITY
+    UNITY = tk.StringVar()
+    
+
     # global PRICE_WORDING
     # PRICE_WORDING = PRICE+" ZEBS"
 

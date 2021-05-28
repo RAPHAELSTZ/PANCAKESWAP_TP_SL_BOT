@@ -99,13 +99,14 @@ class browser_methods:
         lit_token_TO = token_to
         self.enterOutputToken(pancake_swap_tab, lit_token_TO)
         
+        pancake_swap_bot_ui_support.UNITY.set(token_to +" per "+token_from)
         # pancake_swap_tab.print_control_identifiers()
         self.wait(3)
 
         return self.getPriceProcess(pancake_swap_tab)
 
 
-    def TAKE_PROFIT_PART_II(self, limit, price, token_from, token_to):
+    def TAKE_PROFIT_PART_II(self, limit, price, token_from, token_to, root):
         # Refind pancake swap:
         pancake_swap_tab = self.findWithPywinAuto('PancakeSwap.*Chrome')
         print("Before get price process")
@@ -118,10 +119,9 @@ class browser_methods:
 
 
         print("NOW WE WAIT FOR THE PRICE TO CHANGE...")
-        self.waitForPriceToReachSupLimit(pancake_swap_tab, takeProfitLimit)
+        self.waitForPriceToReachSupLimit(pancake_swap_tab, takeProfitLimit, root)
 
-        self.Mbox('Success', 'You have successfully swapped '+str(token_from)+' for '+str(token_to)+', you should go check pancake swap right away! If you enjoyed that software, please visit our website https://mycryptoshirt.net, we sell t-shirts that will get you crypto tips!')
-        print("You have succesfully swapped")
+
 
 
 
@@ -401,10 +401,11 @@ class browser_methods:
         price_element = str(price_element_raw).split(". Price ")[1].split(" ")[0]
         price_element = str(price_element).strip()
         # Set price global variable
-
-        pancake_swap_bot_ui_support.PRICE.set(price_element)
-        
-        return float(price_element)
+        print("SETTING A NEW PRICE IN BM : ")
+        pancake_swap_bot_ui_support.UNITY.set("")
+        pancake_swap_bot_ui_support.PRICE.set(float(price_element))
+        print("READING NEW PRICE ::"+str(pancake_swap_bot_ui_support.PRICE.get()))
+        return float(pancake_swap_bot_ui_support.PRICE.get())
 
 
 
@@ -424,24 +425,36 @@ class browser_methods:
         return float(limitTEMP)
                 
             
-    def waitForPriceToReachSupLimit(self, app, limit):
-
+    def waitForPriceToReachSupLimit(self, app, limit, root):
         current_pricing = self.getPrice(app)    
+        pricing_on = True
         print("Be patient and wait for the price to go up !")
-        while(current_pricing < float(limit)):
-            now = datetime.now()
-            current_time = now.strftime("%H:%M:%S")
-            print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> limit : "+str(limit), end ="\r")
-            time.sleep(1)
-            current_pricing = self.getPrice(app)
 
+        def currentPricing():
+            current_pricing = self.getPrice(app)  
+            if(current_pricing  <= float(limit)):
+             
+                now = datetime.now()
+                current_time = now.strftime("%H:%M:%S")
+                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> limit : "+str(limit), end ="\r")
+                
+                root.after(1000, currentPricing)
+            else:
+                print("NOT HAPPENNING")
 
         
-        if(current_pricing > float(limit)):
-            print("Price reached ! Swap process started")
-            print("Accepting a veery likely 'PRICE UPDATED' ACCEPT BUTTON")
-            self.acceptPriceChange(app)
-            self.swapTokens(app)
+            if(current_pricing > float(limit)):
+                print("Price reached ! Swap process started")
+                print("Accepting a veery likely 'PRICE UPDATED' ACCEPT BUTTON")
+                self.acceptPriceChange(app)
+                self.swapTokens(app)
+                self.congrats()
+
+        currentPricing()
+
+    def congrats(self):
+        self.Mbox('Success', 'You have successfully swapped '+str(token_from)+' for '+str(token_to)+', you should go check pancake swap right away! If you enjoyed that software, please visit our website https://mycryptoshirt.net, we sell t-shirts that will get you crypto tips!')
+        print("You have succesfully swapped")
     
 
     def acceptPriceChange(self, app):

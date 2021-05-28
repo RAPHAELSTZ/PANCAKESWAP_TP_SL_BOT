@@ -42,9 +42,10 @@ w = None
 def create_Toplevel1(rt, *args, **kwargs):
     '''Starting point when module is imported by another module.
        Correct form of call: 'create_Toplevel1(root, *args, **kwargs)' .'''
-    global w, w_win, root
+    global w, w_win, root, bm
     #rt = root
     root = rt
+    bm = browser_methods.browser_methods()
     w = tk.Toplevel (root)
     pancake_swap_bot_ui_support.set_Tk_var()
       
@@ -95,7 +96,7 @@ class Toplevel1:
         if(self.isLimit(TP_LIMIT)):
             print("DISPLAYING LIMIT CHOSEN :::"+str(TP_LIMIT))
             print("Displaying price :::"+str(pancake_swap_bot_ui_support.PRICE))
-            bm.TAKE_PROFIT_PART_II(TP_LIMIT, str(pancake_swap_bot_ui_support.PRICE ), current_operation["token_from"], current_operation["token_to"] )
+            bm.TAKE_PROFIT_PART_II(TP_LIMIT, pancake_swap_bot_ui_support.PRICE , current_operation["token_from"], current_operation["token_to"], root )
                 # Invites user to fill in limits
                 # second_part_take_profit = bm.TAKE_PROFIT_PART_II()
 
@@ -623,17 +624,17 @@ class Toplevel1:
         self.PRICING.configure(justify='left')
         self.PRICING.configure(textvariable=pancake_swap_bot_ui_support.PRICE)
 
-        # self.UNITY = tk.Label(top)
-        # self.UNITY.place(x=435, y=190, height=21, width=220)
-        # self.UNITY.configure(activebackground="#f9f9f9")
-        # self.UNITY.configure(activeforeground="black")
-        # self.UNITY.configure(background="#d9d9d9")
-        # self.UNITY.configure(disabledforeground="#a3a3a3")
-        # self.UNITY.configure(foreground="#000000")
-        # self.UNITY.configure(highlightbackground="#d9d9d9")
-        # self.UNITY.configure(highlightcolor="black")
-        # self.UNITY.configure(justify='left')
-        # self.UNITY.configure(text=unity)
+        self.UNITY = tk.Label(top)
+        self.UNITY.place(x=550, y=190, height=21, width=220)
+        self.UNITY.configure(activebackground="#f9f9f9")
+        self.UNITY.configure(activeforeground="black")
+        self.UNITY.configure(background="#d9d9d9")
+        self.UNITY.configure(disabledforeground="#a3a3a3")
+        self.UNITY.configure(foreground="#000000")
+        self.UNITY.configure(highlightbackground="#d9d9d9")
+        self.UNITY.configure(highlightcolor="black")
+        self.UNITY.configure(justify='left')
+        self.UNITY.configure(text="unity")
 
 # ======================================================
 # Support code for Balloon Help (also called tooltips).
