@@ -402,9 +402,8 @@ class browser_methods:
         price_element = str(price_element).strip()
         # Set price global variable
         print("SETTING A NEW PRICE IN BM : ")
-        # pancake_swap_bot_ui_support.UNITY.set("")
         pancake_swap_bot_ui_support.PRICE.set(float(price_element))
-        print("READING NEW PRICE ::"+str(pancake_swap_bot_ui_support.PRICE.get()))
+
         return float(pancake_swap_bot_ui_support.PRICE.get())
 
 
@@ -436,7 +435,8 @@ class browser_methods:
              
                 now = datetime.now()
                 current_time = now.strftime("%H:%M:%S")
-                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> limit : "+str(limit), end ="\r")
+                unity = pancake_swap_bot_ui_support.UNITY.get()
+                print(str(current_time)+ ") Current price: "+str(current_pricing)+ "=> limit: "+str(limit)+" "+unity, end ="\r")
                 
                 root.after(1000, currentPricing)
             else:
@@ -472,7 +472,8 @@ class browser_methods:
              
                 now = datetime.now()
                 current_time = now.strftime("%H:%M:%S")
-                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> stoploss : "+str(stoploss), end ="\r")
+                unity = pancake_swap_bot_ui_support.UNITY.get()
+                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> stoploss : "+str(stoploss)+" "+unity, end ="\r")
                 
                 root.after(1000, currentPricing)
             else:
@@ -503,7 +504,8 @@ class browser_methods:
              
                 now = datetime.now()
                 current_time = now.strftime("%H:%M:%S")
-                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " ==> stoploss : "+str(stoploss), end ="\r")
+                unity = pancake_swap_bot_ui_support.UNITY.get()
+                print(str(current_time)+ ") Current price: "+str(current_pricing)+ " => SL: "+str(stoploss)+ "<=TP:"+str(takeprofit)+" "+unity, end ="\r")
                 
                 root.after(1000, currentPricing)
             else:
@@ -599,3 +601,7 @@ class browser_methods:
     
 
     # need to make sure that there are no pending transactions to be rejected
+
+
+
+    # compile to exe : python.exe -m nuitka --standalone --mingw64 --plugin-enable=tk-inter pancake_swap_bot_ui.py
