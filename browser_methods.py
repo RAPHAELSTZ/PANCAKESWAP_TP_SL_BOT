@@ -141,11 +141,16 @@ class browser_methods:
         chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6')
 
 
+    def BNB_ETH_TIPS(self):
+        self.Mbox('My Crypto Shirts', 'Credit: Developed by MYCRYPTOSHIRT.NET. If you want to support this bot development, my ERC20: 0xd0e726bE6671fad60A156d075A99a614a9C9fa8e')
+        chrome_dir = self.config.robot["CHROME_DIR"]
+        chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://MYERC20/BEP20:::0xd0e726bE6671fad60A156d075A99a614a9C9fa8e')
 
 
-        def WARNING_TEXT(self):
-            self.Mbox('ROBOT WARNINGS', '''  
-            MIT License
+
+    def WARNING_TEXT(self):
+        self.Mbox('ROBOT WARNINGS', '''  
+        MIT License
 
         Copyright (c) [year] [fullname]
 
@@ -167,7 +172,58 @@ class browser_methods:
         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
         SOFTWARE.''')
 
+        
+    def READ_ME(self):
+        self.Mbox('Using this bot', '''  
+        This bot's purpose is to help you do sth else than starring at your pc for your SHIBA TOKEN or whatever 
+        to land on the moon.
 
+        This is an alternate way of making TP (Take Profit) or/and SL (Stop loss) without paying services on the block chain with fees.
+
+        The pros as mentionned is that you don't pay fees for that it is on your PC and isn't going anywhere
+
+        The cons are multiple :
+            ==> The bot might be disturbed by your actions on PC (Your using of your pc could be enough for the pancake-bot to get completely f**** up)
+                (That is why you should be careful when using your pc with the bot on)
+                It is better used when AFK (away from keyboard), or if you are watching a movie or sth)
+                You should always make sure that it is running =) !!
+
+            ==> The bot might not be quick enough to fullfill the SWAP ! in case of a Rugg pull, or an internal error from pancakeswap.. 
+                They won't be anything the bot can do!
+
+            ==> It is very much like what a retarded human would interact like on pancake swap without any sense of solution-making, trouble shooting..
+
+
+        Of course I'll better it over time, for now it is more or less stable !
+        ''')
+
+        self.Mbox('Manual','''
+            Sorry for the long borring text :
+
+            Requirement: Windows ( only tested on Windows 10)
+            A computer that is not slow as f***
+            a browser with METAMASK INSTALLED
+
+/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\
+            /!\ /!\  YOU NEED TO MAKE SURE THAT YOU HAVE OPENED METAMASK WITH YOUR PASSWORD in THE CURRENT SESSION ==> which means, you have :
+                    1) Opened metamask on a new tab
+                    2) Entered your password and it works OK
+                    3) close the tab BUT NOT CLOSED THE BROWSER (you have at least another tab open !!!)
+
+                    /!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\/!\ /!\
+
+            To use the bot just :
+            1) Enter a percentage that you want to swap.
+            2) Enter the FROM token, either the suggested ones or a custom token.
+            3) Enter the TO token, either the suggested ones or a custom token
+            4) Click on "START ROBOT"
+            5) Wait for bot to get to the swap page where IT WONT LAUNCH THE SWAP don't worry, it is just gathering the price
+            6) (Remember that the bot is a big retard)
+            7) You get prompted to enter LIMITS OR/AND STOP LOSS
+            8) Press go and wait
+            9) If you are careful you can move the console so that it is seeable but it MUST not cover the view.
+
+        ''')
 
 
 
@@ -401,7 +457,6 @@ class browser_methods:
         price_element = str(price_element_raw).split(". Price ")[1].split(" ")[0]
         price_element = str(price_element).strip()
         # Set price global variable
-        print("SETTING A NEW PRICE IN BM : ")
         pancake_swap_bot_ui_support.PRICE.set(float(price_element))
 
         return float(pancake_swap_bot_ui_support.PRICE.get())

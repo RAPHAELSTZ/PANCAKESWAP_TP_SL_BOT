@@ -94,9 +94,10 @@ class Toplevel1:
                 self.TAKE_PROFIT_AT.configure(state='normal')
                 self.STOP_LOSS_AT.configure(state='normal')
                 self.START_SECOND_PART.configure(state='normal')
-                # CHANGE ADD MESSAGE + FOCUS FOR SETTING LIMITS !!!
+
                 # Deactivate Start Robot button
                 self.START_BOT_BUTTON.configure(state='disabled')
+                self.PERCENTAGE_BUTTON.configure(state='disabled') #recently changed
                 
 
     def updateViewPricing(self, price):
@@ -630,22 +631,31 @@ class Toplevel1:
         self.LICENCE_BUTTON.place(x=339, y=440, height=25, width=76)
         self.LICENCE_BUTTON.configure(takefocus="")
         self.LICENCE_BUTTON.configure(text="Licence")
+        self.LICENCE_BUTTON.configure(command=bm.WARNING_TEXT)
 
         self.READ_ME_BUTTON = ttk.Button(top)
         self.READ_ME_BUTTON.place(x=422, y=440, height=25, width=86)
         self.READ_ME_BUTTON.configure(takefocus="")
         self.READ_ME_BUTTON.configure(text="Read Me")
+        self.READ_ME_BUTTON.configure(command=bm.READ_ME)
 
         self.CRYPTOSHIRT_BUTTON = ttk.Button(top)
         self.CRYPTOSHIRT_BUTTON.place(x=514, y=440, height=25, width=106)
         self.CRYPTOSHIRT_BUTTON.configure(takefocus="")
         self.CRYPTOSHIRT_BUTTON.configure(text="Get a cryptoshirt")
+        self.CRYPTOSHIRT_BUTTON.configure(command=bm.BUY_SHIRTS)
 
         self.SUPPORT_BUTTON = ttk.Button(top)
         self.SUPPORT_BUTTON.place(x=514, y=470, height=25, width=146)
         self.SUPPORT_BUTTON.configure(takefocus="")
         self.SUPPORT_BUTTON.configure(text="Support bot with nano :)")
+        self.SUPPORT_BUTTON.configure(command=bm.NANO_TIPS)
 
+        self.SUPPORT_BUTTON = ttk.Button(top)
+        self.SUPPORT_BUTTON.place(x=514, y=500, height=25, width=155)
+        self.SUPPORT_BUTTON.configure(takefocus="")
+        self.SUPPORT_BUTTON.configure(text="Support bot on ETH BNB :)")
+        self.SUPPORT_BUTTON.configure(command=bm.BNB_ETH_TIPS)
 
        
         # render = PhotoImage(file="pcs.gif")
