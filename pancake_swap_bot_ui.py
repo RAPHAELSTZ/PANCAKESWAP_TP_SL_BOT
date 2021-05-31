@@ -660,10 +660,10 @@ class Toplevel1:
         # img.place(x=0, y=0)
 
 
-        pancakeImage = PhotoImage(file="pcs.gif")
+        self.pancakeImage = PhotoImage(file="pcs.png")
         self.PancakeSwapIMAGE = tk.Canvas(top)
-        self.PancakeSwapIMAGE.create_image(0, 0, image=pancakeImage)
-        self.PancakeSwapIMAGE.place(x=330, y=30, height=132, width=142)
+        self.PancakeSwapIMAGE.create_image(120, 75, image=self.pancakeImage)
+        self.PancakeSwapIMAGE.place(x=280, y=30, height=150, width=242)
         # self.PancakeSwapIMAGE.pack()
         self.PancakeSwapIMAGE.configure(background="#d9d9d9")
         self.PancakeSwapIMAGE.configure(borderwidth="2")
