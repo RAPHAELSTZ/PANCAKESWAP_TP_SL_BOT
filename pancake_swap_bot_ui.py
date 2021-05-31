@@ -100,10 +100,6 @@ class Toplevel1:
                 self.PERCENTAGE_BUTTON.configure(state='disabled') #recently changed
                 
 
-    def updateViewPricing(self, price):
-        self.PRICING.configure(text="PRICE:"+price)+ " " + str(current_operation["token_to"]) + " " +str(current_operation["token_from"]) 
-
-
     def startLimits(self):
         # CHANGE !!!! BEFORE PROD
         # self.TAKE_PROFIT_AT.configure(state='normal')
@@ -135,11 +131,12 @@ class Toplevel1:
             bm.TAKE_PROFIT_PART_II(TP_LIMIT, SL_LIMIT, pancake_swap_bot_ui_support.PRICE , current_operation["token_from"], current_operation["token_to"], root, "STOP_LOSS_AND_TP" )
 
 
+    # Self explanatory
     def buttonStartSecondPart(self):
         return messagebox.askyesno("Launch Robot ?","Launch robot or add/remove limit ?")
 
      
-
+    # Check if limit has the right format
     def isLimit(self, limit, PRICE):
         if(limit is not None and limit !=''):
             try:
@@ -153,10 +150,10 @@ class Toplevel1:
                 print("VALUE ERROR FOR LIMIT PRICE")
                 return False
 
+    # Check if stop loss has the right format
     def isStopLoss(self, STOPLOSS, PRICE):
         if(STOPLOSS is not None and STOPLOSS !=''):
             try:
-                print("IN HERE ?")
                 STOPLOSS = float(STOPLOSS)
                 if(STOPLOSS > 0 and float(STOPLOSS)<float(PRICE)):
                     return STOPLOSS
@@ -168,11 +165,9 @@ class Toplevel1:
 
                 return False
         else:
-            print("NOT HERE !")
-   
+            print("Wrong Stop loss")
 
-            print("Limit is defined")
-
+    # Check-ish ERC 20 format 
     def isGoodFormatErc20(self, address):
         if(str(address).startswith("0x")):
             return True
@@ -180,6 +175,7 @@ class Toplevel1:
             showerror("Wrong address format","Wrong ERC20/BEP20 format for address provided!")
             return False
     
+    # Check-ish percentage format
     def isPercentageCorrect(self, value):
         try:
             floatable = float(value)
@@ -189,6 +185,8 @@ class Toplevel1:
             showerror("Wrong percentage Value", "Value entered isn't a number between 1 and 100 :")
             return False
 
+    # Check values from radio-buttons
+    # For the case of custom token, it checks if radio-button value is 'CUSTOM', if so it gives the corresponding text field value to the radio button value.
     def checkInput(self):
         # Values of RADIO buttons
         from_choice = pancake_swap_bot_ui_support.TOKEN_FROM_CHOICE.get()
@@ -199,11 +197,10 @@ class Toplevel1:
             return False
 
         # If entree was custom we take user value as entree
+        #  ==> FROM TOKEN INPUT
         if(from_choice.strip() == 'CUSTOM'):
-            # Values of associated ENTRY fields
-            # texte_val = self.CUSTOM_TOKEN_FROM.get()
             texte_val = pancake_swap_bot_ui_support.TOKEN_CUSTOM_FROM_CHOICE.get()
-            print("TEXT VAL IS ::"+texte_val)
+
             if(texte_val.strip() == ''):
                 showerror("Information missing", "You need to choose both sides of the swap ! ")
                 return False
@@ -212,7 +209,7 @@ class Toplevel1:
                 return False 
 
             from_choice = texte_val
-
+        #  ==> TO TOKEN INPUT
         if(to_choice.strip() == 'CUSTOM'):
             texte_val = pancake_swap_bot_ui_support.TOKEN_CUSTOM_TO_CHOICE.get()
             if(texte_val.strip() == ''):
@@ -241,7 +238,7 @@ class Toplevel1:
             }
         return True
 
-        
+        # Initializes UI 
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
@@ -586,7 +583,6 @@ class Toplevel1:
         self.CHECK_BOX_SL.configure(state='disabled')
         self.CHECK_BOX_SL.configure(var= pancake_swap_bot_ui_support.STOP_LOSS_ACTIVATED)
 
-        
         self.CHECK_BOX_SL_tooltip = \
         ToolTip(self.CHECK_BOX_SL, self.tooltip_font, "Check this box to activate STOP LOSS limit")
 
@@ -714,7 +710,6 @@ class Toplevel1:
         self.UNITY.configure(disabledforeground="#a3a3a3")
         self.UNITY.configure(foreground="#000000")
         self.UNITY.configure(textvariable=pancake_swap_bot_ui_support.UNITY)
-
 
         self.START_SECOND_PART = tk.Button(top)
         self.START_SECOND_PART.place(x=585, y=245, height=24, width=50)

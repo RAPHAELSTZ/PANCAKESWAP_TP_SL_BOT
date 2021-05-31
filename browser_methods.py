@@ -28,7 +28,8 @@ class browser_methods:
 
     # 
     ''' 
-    Start of the amazing TAKE PROFIT BOT , if return = TRUE ==> END OF THIS PART
+    Start of the (amazing) TAKE PROFIT BOT , if return == TRUE ==> END OF THIS PART
+    It is a succession of actions that will take place during the swap scenario
     '''
     def TAKE_PROFIT_BOT(self, token_from, token_to, percentage):
 
@@ -46,7 +47,6 @@ class browser_methods:
         self.wait(1)
         # print("Checking  metamask state")
         pancake_swap_tab = self.findWithPywinAuto('PancakeSwap.*Chrome')
-        print("Metamask is running :"+str(self.isMetamaskRunning(pancake_swap_tab)))
 
         close_restore_pages_button = self.findButton(pancake_swap_tab, "CloseButton0")
         if(close_restore_pages_button):
@@ -93,7 +93,7 @@ class browser_methods:
         return self.getPriceProcess(pancake_swap_tab)
 
     '''
-        This methods defines what happens once use has described either a SL, a TP or both
+        This methods defines what happens once user has described either a SL, a TP or both
         minimize().maximize() is a trick to get the focus back on the browser
     '''
     def TAKE_PROFIT_PART_II(self, limit, stoploss,  price, token_from, token_to, root, TYPE_OF_PART_II):
@@ -122,7 +122,7 @@ class browser_methods:
 
 
 
-
+    # Will user buy a crypto shirt ?
     def BUY_SHIRTS(self):
         # self.findWithPywinAuto('MetaMask Notification')
         # connect:
@@ -134,20 +134,20 @@ class browser_methods:
         chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://mycryptoshirt.net')
 
 
-
+    # Is the user generous ?
     def NANO_TIPS(self):
         self.Mbox('My Crypto Shirts', 'Credit: Developed by MYCRYPTOSHIRT.NET. If you want to support this bot development : nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6')
         chrome_dir = self.config.robot["CHROME_DIR"]
         chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://nano_1n6g87i3bujqnrpzk56tz8f3gzjud5fpsa1xj85gsxox1sica1jhp54xxgi6')
 
-
+    # Same as previous
     def BNB_ETH_TIPS(self):
         self.Mbox('My Crypto Shirts', 'Credit: Developed by MYCRYPTOSHIRT.NET. If you want to support this bot development, my ERC20: 0xd0e726bE6671fad60A156d075A99a614a9C9fa8e')
         chrome_dir = self.config.robot["CHROME_DIR"]
         chrome_app_tpb = Application(backend='uia').start(chrome_dir+' --force-renderer-accessibility --start-maximized https://MYERC20/BEP20:::0xd0e726bE6671fad60A156d075A99a614a9C9fa8e')
 
 
-
+    # Licence
     def WARNING_TEXT(self):
         self.Mbox('ROBOT WARNINGS', '''  
         MIT License
@@ -172,7 +172,7 @@ class browser_methods:
         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
         SOFTWARE.''')
 
-        
+    # Yes
     def READ_ME(self):
         self.Mbox('Using this bot', '''  
         This bot's purpose is to help you do sth else than starring at your pc for your SHIBA TOKEN or whatever 
@@ -231,7 +231,7 @@ class browser_methods:
         Belows are all methods used within the differents bots 
     '''
 
-
+    # Former bot console menu
     def chooseToken(self, direction):
         try:
             print(_("Choose token you want to swap "+direction+" :\n"))
@@ -262,7 +262,6 @@ class browser_methods:
 
             return user_choice or custom_contract
         except:
-            print("What are you trying to achieve..?? DEFAULT CHOICE CUSTOM TOKEN")
             second_chance = input("Please copy/paste here the contract address of the Token you want to swap "+direction+" : ")
             return second_chance
 
@@ -285,19 +284,15 @@ class browser_methods:
             return 100
 
 
-    def isMetamaskRunning(self, elt):
-        # pancake_swap_tab  = elt.print_control_identifiers()
-
-        # if(connect_element_value.lower() != "connect"):
-        #     return True
-        return False
-
+    # The wait method ! RPA bots are really sensitive they need to wait for your pc to handle things
     def wait(self, t):
         time.sleep(t)
 
 
-# 'MetaMask Notification'
-
+    ''' 
+        The "find" methods are using PYWIN AUTO library to read user screen and do some action
+        Go check out PYWIN AUTO library to learn more
+    '''
     def findWithPywinAuto(self, title_regex):
         windows = Desktop(backend="uia").windows()
         print([w.window_text() for w in windows])
@@ -393,7 +388,6 @@ class browser_methods:
             self.wait(1.8)
             send_keys(TOKEN_FROM)
             send_keys("{ENTER}")
-            # app.print_control_identifiers()
 
     def enterOutputToken(self,app, TOKEN_TO):
         print("click on 'select a currency' ")
@@ -404,7 +398,6 @@ class browser_methods:
             send_keys(TOKEN_TO)
             self.wait(0.2)
             send_keys("{ENTER}")
-            # app.print_control_identifiers()
             
 
     def getTokenBalance(self, app, optional_token_from=None):
@@ -463,8 +456,9 @@ class browser_methods:
 
 
 
-    
 
+
+    # Former CONSOLE MENU method
     def setTakeprofitLimit(self, app, current_price, lit_token_TO, lit_token_FROM):
         limit=None 
         limitTEMP = input("type a positive number > "+str(current_price)+" "+lit_token_TO+" per "+lit_token_FROM+" : ")
@@ -478,7 +472,9 @@ class browser_methods:
                 print("You need to enter a limit that is GREATER than current price")
         return float(limitTEMP)
                 
-            
+    # Loop Methods that waits once user has clicked "go"
+
+    #For LIMIT ONLY
     def waitForPriceToReachSupLimit(self, app, limit, root):
         current_pricing = self.getPrice(app)    
         pricing_on = True
@@ -516,6 +512,7 @@ class browser_methods:
     '''
         This methods shows a TKINTER 'loop' to allow the robot to know whether price is under stop loss or not
     '''
+    #For STOP LOSS ONLY
     def waitForPriceToReachStopLoss(self, app, stoploss, root):
         current_pricing = self.getPrice(app)    
         pricing_on = True
@@ -548,6 +545,7 @@ class browser_methods:
     '''
         This methods shows a TKINTER 'loop' to allow the robot to know whether price is under stop loss or not
     '''
+    #For LIMIT OR STOP LOSS
     def waitWithPriceSLorTP(self, app, stoploss, takeprofit, root):
         current_pricing = self.getPrice(app)    
         pricing_on = True
@@ -580,16 +578,18 @@ class browser_methods:
         # Launches above method !
         currentPricing()
 
+    # Self explanatory
     def congrats(self):
         self.Mbox('Success', 'You have successfully swapped '+str(token_from)+' for '+str(token_to)+', you should go check pancake swap right away! If you enjoyed that software, please visit our website https://mycryptoshirt.net, we sell t-shirts that will get you crypto tips!')
         print("You have succesfully swapped")
     
-
+    # Confirming a price change
     def acceptPriceChange(self, app):
         acceptPriceButton = self.findButton(app, "AcceptButton")
         if(acceptPriceButton is not None):
             acceptPriceButton.click()
 
+    # To swap tokens
     def swapTokens(self, app):
         swapButton = self.findButton(app, "Confirm Swap")
         if(swapButton is not None):
@@ -606,7 +606,8 @@ class browser_methods:
         self.wait(2)
         metamask_popup_app = self.findMetamaskPopup()
         metamask_popup_app.maximize().set_focus()
-        # Possible pending transactions to be rejected :
+
+        # ===> Possible pending transactions to be rejected :
         to_be_rejected_transactions = self.findHyperLink(metamask_popup_app, "REJECT .* TRANSACTIONS")
         if(to_be_rejected_transactions is not None):
             to_be_rejected_transactions.invoke()
@@ -621,7 +622,7 @@ class browser_methods:
                     warning_rejected_transaction.click()
                     self.wait(1)
                     
-            # app.print_control_identifiers()
+
             # re-accept since ALL transactions pending are rejected
 
             swapButton = self.findButtonRegex(app, u"Swap")
@@ -655,7 +656,7 @@ class browser_methods:
         return ctypes.windll.user32.MessageBoxW(0, text, title, 4096)
     
 
-    # need to make sure that there are no pending transactions to be rejected
+
 
 
 
